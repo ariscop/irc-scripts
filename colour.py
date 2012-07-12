@@ -1,15 +1,22 @@
 import xchat
 import random
 import shelve
+import sys
 import os
 
+#Xchat stuff
 __module_name__ = "colour"
 __module_version__ = "0.2"
 __module_description__ = "Colour Script"
 
 xchatdir = xchat.get_info("xchatdir");
+storepath = xchatdir + os.sep
+sys.path.append(storepath + "scripts")
 
-store = shelve.open(xchatdir + os.sep + "colour.db")
+#local modules
+import flip
+
+store = shelve.open(storepath + "colour.db")
 
 def onUnload(arg):
 	store.close()
@@ -60,7 +67,9 @@ def onColour(word, word_eol, userdata):
 		xchat.prnt(store(chan))
 	
 	elif word[1] == "list":
-		for x in store:
+		keys = store.keys()
+		keys.sort()
+		for x in keys:
 			xchat.prnt(str(x)+": "+str(store[x]))
 	
 	else:
@@ -118,17 +127,45 @@ def onRainbowDash(word, word_eol, userdata):
 	for x in word_eol[1]:
 		out += colour(rd[i], bg) + x
 		i = (i + 1) % len(rd)
+		if i == 0:
+			col = rd[len(rd)-1]
+			#minimum distance of 2 betwene random colours
+			while col == rd[0]:
+				random.shuffle(rd)
 	
 	xchat.command(out)
 	return xchat.EAT_XCHAT
 
+def onFlip(word, word_eol, userdata):
+	sirFlip = u" (\u256F\u00B0\u25A1\u00B0\uFF09\u256F\uFE35 "
 
+	out = u"msg " + xchat.get_info("channel") + sirFlip
+	if word[1] == "table":
+		out += u"\u253B\u2501\u253B"
+	else:
+		out += flip.flipText(word_eol[1], reverse=True)
+	xchat.command(out.encode("utf8"))
+	return xchat.EAT_NONE
+
+
+
+#handle normal messages
 xchat.hook_command("", onMessage)
 xchat.hook_command("me", onMe)
+
+#random colours
 xchat.hook_command("rainbow", onRainbow)
 xchat.hook_command("rainbowchar", onRainbowChar)
+
+#RAINBOW DASH :D
 xchat.hook_command("rainbowdash", onRainbowDash)
+xchat.hook_command("rd", onRainbowDash)
+
+#Colour managment
 xchat.hook_command("colour", onColour)
+
+#Flip text
+xchat.hook_command("flip", onFlip)
 
 xchat.hook_unload(onUnload)
 
