@@ -14,7 +14,7 @@ storepath = xchatdir + os.sep
 sys.path.append(storepath + "scripts")
 
 #local modules
-import flip
+#import flip
 
 store = shelve.open(storepath + "colour.db")
 
@@ -136,6 +136,54 @@ def onRainbowDash(word, word_eol, userdata):
 	xchat.command(out)
 	return xchat.EAT_XCHAT
 
+def onRainbowDashMe(word, word_eol, userdata):
+	chan = xchat.get_info("channel")
+	
+		 #4, 7, 8, 9, 11, 6, 13
+	rd = [4, 7, 8, 9, 3, 6]
+	bg = 2;
+	
+	out = "me "
+	word.remove(word[0])
+	i = int(round(random.uniform(0, 5)))
+
+	for x in word_eol[1]:
+		out += colour(rd[i], bg) + x
+		i = (i + 1) % len(rd)
+		if i == 0:
+			col = rd[len(rd)-1]
+			#minimum distance of 2 betwene random colours
+			while col == rd[0]:
+				random.shuffle(rd)
+	
+	xchat.command(out)
+	return xchat.EAT_XCHAT
+
+
+def onRainbowBackground(word, word_eol, userdata):
+	chan = xchat.get_info("channel")
+	
+		 #4, 7, 8, 9, 11, 6, 13
+	rd = [4, 7, 8, 9, 3, 6]
+	bg = 0;
+	
+	out = "msg " + chan + " "
+	word.remove(word[0])
+	i = int(round(random.uniform(0, 5)))
+
+	for x in word_eol[1]:
+		out += colour(bg, rd[i]) + x
+		i = (i + 1) % len(rd)
+		if i == 0:
+			col = rd[len(rd)-1]
+			#minimum distance of 2 betwene random colours
+			while col == rd[0]:
+				random.shuffle(rd)
+	
+	xchat.command(out)
+	return xchat.EAT_XCHAT
+
+"""
 def onFlip(word, word_eol, userdata):
 	sirFlip = u" (\u256F\u00B0\u25A1\u00B0\uFF09\u256F\uFE35 "
 
@@ -143,10 +191,10 @@ def onFlip(word, word_eol, userdata):
 	if word[1] == "table":
 		out += u"\u253B\u2501\u253B"
 	else:
-		out += flip.flipText(word_eol[1], reverse=True)
+		out += flip.flipText(word_eol[1], rev=True)
 	xchat.command(out.encode("utf8"))
 	return xchat.EAT_NONE
-
+"""
 
 
 #handle normal messages
@@ -160,12 +208,16 @@ xchat.hook_command("rainbowchar", onRainbowChar)
 #RAINBOW DASH :D
 xchat.hook_command("rainbowdash", onRainbowDash)
 xchat.hook_command("rd", onRainbowDash)
+xchat.hook_command("rdme", onRainbowDashMe)
+
+#RAINBOW BACKGROUND :D
+xchat.hook_command("rb", onRainbowBackground)
 
 #Colour managment
 xchat.hook_command("colour", onColour)
 
 #Flip text
-xchat.hook_command("flip", onFlip)
+#xchat.hook_command("flip", onFlip)
 
 xchat.hook_unload(onUnload)
 
