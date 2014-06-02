@@ -1,0 +1,4 @@
+LIBRARY spotify
+DESCRIPTION 'spotify'
+EXPORTS
+mircFindWindow
