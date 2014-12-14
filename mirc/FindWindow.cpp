@@ -11,9 +11,10 @@ struct _priv {
 BOOL CALLBACK EnumWindowProc(HWND hwnd, LPARAM lp)
 {
 	struct _priv *priv = (struct _priv*)lp;
-	char *out = priv->out;
-	GetWindowText(hwnd, out, 500);
-	if(strstr(out, priv->prefix) == out) {
+	wchar_t name[500];
+	GetWindowTextW(hwnd, name, 500);
+	WideCharToMultiByte(CP_UTF8, 0, name, -1, priv->out, 500, NULL, NULL);
+	if(strstr(priv->out, priv->prefix) == priv->out) {
 		priv->success = true;
 		return FALSE;
 	}
