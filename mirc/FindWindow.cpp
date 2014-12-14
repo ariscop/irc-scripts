@@ -21,8 +21,7 @@ BOOL CALLBACK EnumWindowProc(HWND hwnd, LPARAM lp)
 	return TRUE;
 }
 
-int __stdcall mircFindWindow(HWND mWnd, HWND aWnd, char *data, char *parms, BOOL show, 
-					   BOOL nopause)
+int __stdcall mircFindWindow(HWND mWnd, HWND aWnd, char *data, char *parms, BOOL show, BOOL nopause)
 {
 	struct _priv priv;
 	char prefix[900];
